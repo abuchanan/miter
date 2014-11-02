@@ -13,15 +13,15 @@ def lex(s):
 
 class LexerTests(unittest.TestCase):
 
+    def assertTokens(self, s, expected):
+        self.assertEqual(lex(s), expected)
+
     def test_words(self):
         tokens = lex('one two')
         self.assertEqual(tokens, [
             lexer.Token('word', 'one'),
             lexer.Token('word', 'two'),
         ])
-
-    def assertTokens(self, s, expected):
-        self.assertEqual(lex(s), expected)
 
     def test_skip_leading_whitespace(self):
         self.assertTokens('   one two', [
