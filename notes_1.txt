@@ -1,0 +1,27 @@
+issues:
+
+- deferred boilerplate
+- long arg lists
+- configuration
+- factory vs singleton
+- why does mach code end up with a pyramid of returns?
+
+
+
+interesting/common patterns:
+
+- chains (monads?)
+- DI
+- immutability
+- one-way data flow? still new to me
+- event callbacks
+- YAML for object def.
+- I've always wanted to use classes (in Python, let's say)
+  to define instances concisely, but end up needing to
+  define everything in an __init__. Scala has nice, succint
+  class definition.
+
+
+other
+- weak ref. good for event callback model
+- method context binding

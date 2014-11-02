@@ -1,0 +1,277 @@
+# Notes
+#
+# It's difficult to save the return value of a method to a variable
+#
+# It's difficult to chain scopes, e.g. "parent.child.subchild"
+#   "of" keyword might have value
+#
+# "is" would be very common assignment operation? or use "set _ to _"?
+#
+# I can feel compound statements looming. How do those work?
+# What does the comma charater mean?
+#
+# How does "return" work? Does it exist?
+#
+# Since I've hijacked string syntax, how do strings work?
+#
+# Does "and" have special meaning?
+#
+# Is the "of" syntax too verbose? Maybe the "." is valuable enough?
+# 'clip.textures'
+
+
+
+
+def: render background
+
+  requires 'renderer' and 'background grid'
+
+  'background layer' is the layer from 'renderer' named 'background'
+
+  'renderable' is a 'Tile Batch'
+    create TileBatch from 'background grid'
+
+  add 'renderable' to 'layer'
+
+
+
+def: render player
+
+  requires
+    'renderer'
+    'body'
+
+  'player layer'
+    get layer named 'player' from 'renderer'
+
+  'background layer'
+    get layer named 'background' from 'renderer'
+
+  'objects layer'
+    get layer named 'objects' from 'renderer'
+
+  'clip'
+    'clip textures'
+      get 'stop down' from 'textures'
+
+    create 'Movie Clip' using 'clip textures'
+
+  set 'clip width' to 'width of body'
+
+  set 'clip height' to 'height of body'
+
+  # OR
+
+  'clip' is a 'Movie Clip'
+
+    # This is pretty weird
+    'textures'
+      get 'stop down' from 'textures'
+
+  configure 'clip' with
+  # OR
+  in context of 'clip'
+  with context of 'clip'
+    'width' is 'width of body'
+    'height' is 'height of body'
+    'animation speed' is 0.1
+
+    'x position' is 'width of renderer' divided by 2
+    'y position' is 'height of renderer' divided by 2
+
+  add 'clip' to 'player layer'
+
+  on event 'scene tick'
+    'state'
+      get state of 'action manager'
+
+    # OR
+
+    'state' is 'action manager state'
+
+    # try to remove blah blah
+
+    def 'render stopped'
+
+      'x position' of 'objects layer' is
+        ('width of objects layer' / 2) - 'x position of body'
+
+      'y position' of 'objects layer' is
+        ('width of objects layer' / 2) - 'y position of body'
+
+      set 'x position of background layer' to
+          ('width of background layer' divided by 2) minus 'x position of body'
+
+      set 'y position of background layer' to
+          'height of background layer' divided by 2, minus 'x position of body'
+
+      'texture name' is "stop-{ direction of body }"
+
+      # Compound expression
+      set 'textures of clip' to (get 'texture name' from 'textures')
+
+      # OR
+
+      set 'textures of clip' to
+        get 'texture name' from 'textures'
+
+      # OR
+
+      'textures of clip'
+        get 'texture name' from 'textures'
+
+      # end compound expression thoughts
+
+      # NOTE this is interesting because so far all the arguments to methods
+      #      have been identifiers/references, now it's a primitive number
+      go to frame 0 of 'clip' and stop
+
+      # OR
+      go to frame 0 of 'clip'
+      stop 'clip'
+
+    # Want end statements?
+    end
+     
+    if not 'state'
+      render stopped
+
+    else
+      if 'state' is an instance of 'Movement'
+        # Another option for assignment syntax
+        let 'texture name' be 'name of state'
+
+        # "of" and "get _ from _" are similar in a way
+        # The issue is that "of" is used inside an identifier
+        # already, so how could it use a identifier itself? Identifier inside identifier
+        let 'textures of clip' be (get 'texture name' from 'textures')
+
+        # Maybe...
+        let 'textures of clip' be '{ texture name } of textures'
+
+        # Or mayber there are other, nicer ways of denoting interpolation
+
+        # Or maybe introduce a "from" keyword
+        let 'textures of clip' be '{ texture name } from textures'
+
+        # Or
+        let 'textures of clip' be 'textures[texture name]'
+
+        # Or
+        let 'textures of clip' be 'texture name' from 'textures'
+
+        let 'pos' be 'interpolated position of state'
+
+        let 'x position of objects layer' be
+          # Ooohh namespaces.... how do those work?
+          # Also tricky are these functions with names that don't translate
+          # into a succinct phrase. "get mathematical floor of "?
+          Math.floor (('width of objects layer' / 2) - 'x position of pos')
+
+        let 'y position of objects layer' be
+          numerical floor of ('width of objects layer' / 2) - 'x position of pos'
+
+        in the context of 'background layer'
+          # Note the work "the" creeping in here when inline
+          # vs. block format above
+          let 'x' be the numerical floor of ('width' / 2) - 'x position of pos'
+          let 'y' be the numerical floor of ('height' / 2) - 'y position of pos'
+
+          # OR
+          'x' is the numerical floor of ('width' / 2) - 'pos.x'
+          'y' is the numerical floor of ('height' / 2) - 'pos.y'
+          # this syntax is far more verbose in cases like this.
+          # python would do: x = math.floor(x / 2 - pos.x)
+
+          # OR, interesting. there's that comma again, and a past tense verb
+          'x' is ('width' / 2) - 'x position of pos', floored
+
+          # This is ambiguous. Is it play(clip) or clip.play()?
+          play 'clip'
+
+      else
+        render stopped
+
+
+def 'player textures'
+    let 'image source' be "media/player-pieces.png"
+    let 'JSON source' be "media/player-pieces.json"
+
+    let 'parts' be
+    # OR
+    'parts':
+        load sprite sheet synchronously from 'image source' and 'JSON source'
+
+        # OR
+        sync. load sprite sheet from 'image source' and 'JSON source'
+
+        # OR the converse
+        load sprite sheet from 'image source' and 'JSON source' asynchronously
+
+    return object
+        "stop-up": list
+            'parts["up-0"]'
+
+
+def: the numerical floor of 'number':Number
+
+def: the numerical floor of 'number' (a Number)
+
+def: the numerical floor of 'number' (is a Number)
+
+def: the numerical floor of 'number : Number'
+
+def: the numerical floor of Number (named 'number')
+
+def: 'number' floored
+  'number' is a 'Number'
+  
+
+def play 'clip'
+  'clip' is a 'Movie Clip from PIXI'
+
+def setup body config
+  log "load point" and loadpoint
+
+  'x position of body config': 'x position of the player config of the loadpoint'
+  'y position of body config' = 'y position of the player config of the loadpoint'
+
+  let 'width of body config' be 32
+  let 'height of body config' be 32
+
+
+def 'setup sounds'
+  configure 'sounds' with
+    let 'swing sword' be
+      create sound with object
+        urls: list
+          "media/sounds/swings.wav"
+ 
+
+type 'Walk Up'
+  # "is a" could be a confusing terminology because it has a long history
+  # and therefore lots of expectations
+  is a 'Movement'
+
+
+# Types will be needed.  Need type annotation syntax
+def: create 'walk up'
+  'walk up' is a 'Movement'
+
+
+# Go's struct literals are interesting. Feels like something I've been wanting in
+# Python class defs for awhile.
+
+
+# Since I have types, how will generics be handled? Imagine I have a method that
+# removes an element from a list. The def might be "remove [Generic Type] from [List]"
+# The engine needs to know how to find the right "remove ..." method to run.
+
+
+
+# Ideas for issues to tackle:
+# - variable length arguments
+# - *args and **kwargs from python
+
+
+# Lacking return type so far. Can it be implicit?
