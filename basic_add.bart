@@ -1,4 +1,8 @@
-define 'x' plus 'y'
-    'x' is an 'integer'
-    'y' is an 'integer'
-    return 'x' + 'y'
+
+
+let 'x' be 1
+
+
+
+let 'y' be 2
+'x' + 'y'

@@ -1,9 +1,5 @@
-import argparse
 
-import lexer
 
-parser = argparse.ArgumentParser()
-parser.add_argument('source_file', type=argparse.FileType)
 
 
 # stmt: def
@@ -48,12 +44,3 @@ def tokens_to_ast(tokens):
 
 def compile_ast(ast):
     pass
-
-
-if __name__ == '__main__':
-    args = parser.parse_args()
-    fh = args.source_file
-
-    tokens = source_to_tokens(fh)
-    ast = tokens_to_ast(tokens)
-    code = ast_to_code(ast)

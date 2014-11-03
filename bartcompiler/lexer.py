@@ -14,6 +14,9 @@ def is_newline(c):
 def is_whitespace(c):
     return c == ' '
 
+def is_digit(c):
+    return c in string.digits
+
 def is_word_char(c):
     return c in string.ascii_letters + '+-'
 
@@ -64,6 +67,10 @@ class StateMachine(object):
                 self.state = 'word'
                 return 'word'
 
+            elif is_digit(c):
+                self.state = 'number'
+                return 'number'
+
             elif is_single_quote(c):
                 self.state = 'start ID'
                 return 'ignore'
@@ -89,6 +96,25 @@ class StateMachine(object):
 
             if is_word_char(c):
                 return 'word'
+
+            elif is_whitespace(c):
+                self.state = 'start'
+                return 'ignore'
+
+            elif is_newline(c):
+                self.state = 'newline'
+                return 'newline'
+
+            elif is_single_quote(c):
+                raise InvalidWord_SingleQuote()
+
+            else:
+                raise UnrecognizedInput()
+
+        elif self.state == 'number':
+
+            if is_digit(c):
+                return 'number'
 
             elif is_whitespace(c):
                 self.state = 'start'
@@ -163,6 +189,9 @@ class Lexer(object):
 
             elif group_type == 'indent':
                 yield Token('indent', ''.join(group))
+
+            elif group_type == 'number':
+                yield Token('number', ''.join(group))
 
             else:
                 raise UnrecognizedInput()

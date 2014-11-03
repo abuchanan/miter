@@ -1,0 +1,14 @@
+define 'x' plus 'y'
+    'x' is an 'integer'
+    'y' is an 'integer'
+    return 'x' + 'y'
+
+
+# Could try to find a more succint way of writing variables, maybe something
+# that declares a word as being a variable in the current scope. e.g.
+
+define 'x' plus 'y'
+    x is an integer
+    y is an integer
+
+    return x + y
