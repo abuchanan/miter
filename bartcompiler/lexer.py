@@ -72,10 +72,18 @@ class StateMachine(object):
                 return 'ignore'
 
             elif is_newline(c):
+                self.state = 'newline'
                 return 'newline'
 
             else:
                 raise UnrecognizedInput()
+
+        elif self.state == 'newline':
+            if is_whitespace(c):
+                return 'indent'
+            else:
+                self.state = 'start'
+                return self.get_type(c)
 
         elif self.state == 'word':
 
@@ -87,7 +95,7 @@ class StateMachine(object):
                 return 'ignore'
 
             elif is_newline(c):
-                self.state = 'start'
+                self.state = 'newline'
                 return 'newline'
 
             elif is_single_quote(c):
@@ -152,6 +160,9 @@ class Lexer(object):
 
             elif group_type == 'newline':
                 yield Token('newline', '')
+
+            elif group_type == 'indent':
+                yield Token('indent', ''.join(group))
 
             else:
                 raise UnrecognizedInput()

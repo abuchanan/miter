@@ -111,3 +111,11 @@ class LexerTests(unittest.TestCase):
             lexer.Token('word', '-'),
             lexer.Token('word', 'y'),
         ])
+
+    def test_indent(self):
+        self.assertTokens('x\n  y', [
+            lexer.Token('word', 'x'),
+            lexer.Token('newline', ''),
+            lexer.Token('indent', '  '),
+            lexer.Token('word', 'y'),
+        ])
