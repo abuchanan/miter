@@ -41,18 +41,18 @@ class InvalidID_Incomplete(Exception):
 
 class Token(object):
 
-    def __init__(self, type, token=''):
+    def __init__(self, type, value=''):
         self.type = type
-        self.token = token
+        self.value = value
 
     def _key(self):
-        return self.type, self.token
+        return self.type, self.value
 
     def __eq__(self, other):
         return self._key() == other._key()
 
     def __repr__(self):
-        return 'Token({}, {})'.format(self.type, self.token)
+        return 'Token({}, {})'.format(self.type, self.value)
 
 
 class StateMachine(object):
@@ -191,7 +191,8 @@ class Lexer(object):
                 yield Token('indent', ''.join(group))
 
             elif group_type == 'number':
-                yield Token('number', ''.join(group))
+                # TODO handle more than int()
+                yield Token('number', int(''.join(group)))
 
             else:
                 raise UnrecognizedInput()
