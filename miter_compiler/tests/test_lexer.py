@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from bartcompiler import lexer
+from mitercompiler import lexer
 
 
 logging.basicConfig(level=logging.DEBUG)

@@ -2,7 +2,7 @@ import argparse
 import ast
 import itertools
 
-from bartcompiler.lexer import Lexer
+from miter_compiler.lexer import Lexer
 
 
 parser = argparse.ArgumentParser()
