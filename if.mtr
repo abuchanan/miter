@@ -1,0 +1,106 @@
+# Turns out, "if" is tricky...
+
+if not 'state' or not 'other state'
+  do something
+
+
+# which takes precendence? "not" or "or"
+# So how do you define the "if" function?
+
+define if _
+
+# The "_" needs to consume an entire exression
+# Maybe multiple place holders need to exist?
+
+define if _expr_
+
+# OR
+
+define if _+
+
+# This could introduce problems. What if the user starts defining things
+# that require lookahead or are not context-free?
+# And how do you define the desired return type of the expression?
+
+# OR use parenthesis to denote expressions
+
+if (not 'state')
+
+# That means if statements have parens, which I'd prefer to avoid,
+# BUT it would be a pretty good solution to a lot of the issues raised here.
+# Except, how would OR work?
+
+if ((not 'state') or (not 'other state'))
+
+# That's not nice at all. Maybe the outer set could be dropped...
+
+if (not 'state') or (not 'other state')
+
+# Or maybe indentation is an option?
+
+if
+  not 'state'
+or
+  not 'other state'
+then
+  do something
+else if
+  'yet another'
+or
+  'again'
+then
+  do something else
+
+# That would work (I think) and fit in with other designs for nested expressions
+# but it gets pretty verbose
+
+# Maybe
+
+if not 'state'
+or not 'other state'
+then
+  do something
+else
+  do something else
+
+# I like that example quite a bit actually since it encourages a nice style for
+# if statements. Note, this still requires being able to specify that a phrase
+# definition would like to consume an entire expression, but it does solve the
+# issue of nested expressions.
+#
+# But, if-statements can get a lot more complicated. Take this example in Javascript:
+
+if (!one || (two && !three) || four)
+
+# How would this nested expression be written?
+
+if not 'one'
+or 'two' and (not 'three')
+or 'four'
+
+# More examples
+
+if !(one && two)
+
+if not ('one' and 'two')
+
+if not ('one' and 'two')
+
+# The other problem with allowing phrase definitions to accept an expression is
+# that the author shouldn't have to worry about that case. For example, if an author
+# defined "_ floored" they should have to also define "_expr_ floored". So then
+# every fill-in-the-blank has to accept a nested expression.
+
+# Type declarations are also a key part of this, since the types needs to be
+# defined outside the defintion body because the body can't be executed at
+# definition time
+
+
+# Maybe something could allow defining how a sequence of nested expressions
+# maps to precendence
+
+define if not 'one' or 'two' and not 'three' or four
+  return not 'one' or ('two' and (not 'three')) or four
+
+# but, that would encourage code that is difficult to read
+# parenthesis are explicit

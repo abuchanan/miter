@@ -1,0 +1,9 @@
+http://blog.reverberate.org/search?updated-min=2013-01-01T00:00:00-08:00&updated-max=2014-01-01T00:00:00-08:00&max-results=8
+
+http://www.drdobbs.com/architecture-and-design/so-you-want-to-write-your-own-language/240165488?pgno=2
+
+http://qntm.org/top
+
+https://docs.python.org/devguide/compiler.html
+
+http://tratt.net/laurie/blog/entries/parsing_the_solved_problem_that_isnt

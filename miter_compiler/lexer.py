@@ -23,6 +23,12 @@ def is_word_char(c):
 def is_single_quote(c):
     return c == "'"
 
+def is_expression_start(c):
+    return c == '('
+
+def is_expression_end(c):
+    return c == ')'
+
 class InvalidWord_SingleQuote(Exception):
     message = 'Invalid word: single quotes are not allowed'
 
@@ -52,7 +58,7 @@ class Token(object):
         return self._key() == other._key()
 
     def __repr__(self):
-        return 'Token({}, {})'.format(self.type, self.value)
+        return 'Token({}, {})'.format(self.type, repr(self.value))
 
 
 class StateMachine(object):
@@ -75,6 +81,12 @@ class StateMachine(object):
                 self.state = 'start ID'
                 return 'ignore'
 
+            elif is_expression_start(c):
+                return 'expression start'
+
+            elif is_expression_end(c):
+                return 'expression end'
+
             elif is_whitespace(c):
                 return 'ignore'
 
@@ -86,8 +98,16 @@ class StateMachine(object):
                 raise UnrecognizedInput()
 
         elif self.state == 'newline':
+
             if is_whitespace(c):
                 return 'indent'
+
+            elif is_expression_start(c):
+                return 'expression start'
+
+            elif is_expression_end(c):
+                return 'expression end'
+
             else:
                 self.state = 'start'
                 return self.get_type(c)
@@ -108,9 +128,14 @@ class StateMachine(object):
             elif is_single_quote(c):
                 raise InvalidWord_SingleQuote()
 
+            elif is_expression_end(c):
+                return 'expression end'
+
             else:
                 raise UnrecognizedInput()
 
+        # TODO consider moving number to a later step, where word
+        #      gets transformed to number
         elif self.state == 'number':
 
             if is_digit(c):
@@ -126,6 +151,9 @@ class StateMachine(object):
 
             elif is_single_quote(c):
                 raise InvalidWord_SingleQuote()
+
+            elif is_expression_end(c):
+                return 'expression end'
 
             else:
                 raise UnrecognizedInput()
@@ -193,6 +221,12 @@ class Lexer(object):
             elif group_type == 'number':
                 # TODO handle more than int()
                 yield Token('number', int(''.join(group)))
+
+            elif group_type == 'expression start':
+                yield Token('expression start')
+
+            elif group_type == 'expression end':
+                yield Token('expression end')
 
             else:
                 raise UnrecognizedInput()
