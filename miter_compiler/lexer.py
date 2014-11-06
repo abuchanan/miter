@@ -202,6 +202,8 @@ class Lexer(object):
         state = StateMachine()
         grouped = itertools.groupby(chars, state.get_type)
 
+        # TODO maybe try to get rid of ''.join() as a perf. enhancement
+
         for group_type, group in grouped:
             if group_type == 'ignore':
                 pass
@@ -223,10 +225,12 @@ class Lexer(object):
                 yield Token('number', int(''.join(group)))
 
             elif group_type == 'expression start':
-                yield Token('expression start')
+                for _ in group:
+                    yield Token('expression start')
 
             elif group_type == 'expression end':
-                yield Token('expression end')
+                for _ in group:
+                    yield Token('expression end')
 
             else:
                 raise UnrecognizedInput()

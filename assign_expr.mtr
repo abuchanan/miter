@@ -1,0 +1,4 @@
+(let 'x' be 1)
+
+# This is invalid in the current compiler because in python assignment is not an expression
+# which seems logical?

@@ -1,0 +1,10 @@
+print (1)
+print (1 + 1)
+
+let 'x' be 1
+print 'x'
+
+let 'y' be 5
+print 'y'
+
+print ('x' + 'y')

@@ -145,3 +145,13 @@ class LexerTests(unittest.TestCase):
             Token('number', 123),
             Token('expression end')
         ])
+
+    def test_consecutive_nested_expression(self):
+        self.assertTokens("((not 123))", [
+            Token('expression start'),
+            Token('expression start'),
+            Token('word', 'not'),
+            Token('number', 123),
+            Token('expression end'),
+            Token('expression end')
+        ])
