@@ -218,7 +218,7 @@ class Lexer(object):
                 yield Token('newline', '')
 
             elif group_type == 'indent':
-                yield Token('indent', ''.join(group))
+                yield Token('indent', len(list(group)))
 
             elif group_type == 'number':
                 # TODO handle more than int()

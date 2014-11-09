@@ -1,6 +1,6 @@
 issues:
 
-- deferred boilerplate
+- deferred boilerplate (i.e. boilerplate around async code, promises, deferreds, etc)
 - long arg lists
 - configuration
 - factory vs singleton

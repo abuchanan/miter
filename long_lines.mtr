@@ -1,1 +1,17 @@
 # How will long lines be handled?
+
+# Maybe start line with some symbol that denotes continuation?
+
+define some long function name where I am going to run out of 'room' screaming
+| and this is part of the previous line
+
+# Or maybe consecutive lines (without indent) are always combined. Kinda like
+# markdown
+
+define some long function name where I am going to run out of 'room' screaming
+and this is part of the previous line
+
+    and the function block code is here
+
+# That would require every line to be separated with a blank line. That could
+# get *too* spaced out

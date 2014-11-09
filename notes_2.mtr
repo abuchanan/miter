@@ -227,10 +227,10 @@ def: 'number' floored
   'number' is a 'Number'
   
 
-def play 'clip'
+define: play 'clip'
   'clip' is a 'Movie Clip from PIXI'
 
-def setup body config
+define: setup body config
   log "load point" and loadpoint
 
   'x position of body config': 'x position of the player config of the loadpoint'
@@ -240,7 +240,7 @@ def setup body config
   let 'height of body config' be 32
 
 
-def 'setup sounds'
+define: 'setup sounds'
   configure 'sounds' with
     let 'swing sword' be
       create sound with object
@@ -255,7 +255,7 @@ type 'Walk Up'
 
 
 # Types will be needed.  Need type annotation syntax
-def: create 'walk up'
+define: create 'walk up'
   'walk up' is a 'Movement'
 
 

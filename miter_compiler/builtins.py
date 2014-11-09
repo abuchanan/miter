@@ -25,9 +25,19 @@ def handle_print(target):
 def handle_expr(value):
     return value.ast
 
+def handle_if(test):
+    return ast.Num(n=1)
+    #return ast.If(test.ast, body.ast)
+
+def handle_else():
+    return ast.Num(n=1)
+    
 signature_map = {
     'let _ be _': handle_assignment,
     '_ + _': handle_addition,
     'print _': handle_print,
+    'if _': handle_if,
+    'else': handle_else,
+    # TODO this is a little weird. could be cleaned up?
     '_': handle_expr,
 }
