@@ -18,7 +18,7 @@ def is_digit(c):
     return c in string.digits
 
 def is_word_char(c):
-    return c in string.ascii_letters + '+-'
+    return c in string.ascii_letters + '+-:'
 
 def is_single_quote(c):
     return c == "'"

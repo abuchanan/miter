@@ -17,8 +17,13 @@ class Module(object):
 
 class SimpleNode(object):
 
-    def __init__(self, value):
+    def __init__(self, value, block=None):
         self.value = value
+
+        if block is not None:
+            self.block = block
+        else:
+            self.block = []
 
     def __repr__(self):
         return '{}({})'.format(self.node_type, self.value)
@@ -30,6 +35,8 @@ class SimpleNode(object):
 class Word(SimpleNode): pass
 class ID(SimpleNode): pass
 class Number(SimpleNode): pass
+class Define(SimpleNode): pass
+class Return(SimpleNode): pass
 
 
 # TODO find a good naming scheme with statement, expression, and possibly phrase
@@ -156,6 +163,10 @@ def tokens_to_expression(tokens):
 
         parts.append(part)
 
+    return parts_to_expression(parts)
+
+
+def parts_to_expression(parts):
     sig = signature(parts)
 
     if sig == '_ + _':
@@ -164,6 +175,16 @@ def tokens_to_expression(tokens):
     elif sig == 'let _ be _':
         # TODO verify args. first arg must be ID
         return AssignmentExpression(sig, parts)
+
+    elif parts[0].value == 'define:':
+        # TODO define statements can't contain nested expressions, only IDs
+        # TODO define may not occur in a nested expression
+        return Define(parts_to_expression(parts[1:]))
+
+    elif parts[0].value == 'return':
+        return Return(parts_to_expression(parts[1:]))
+
+    # TODO handle expression that is a value, e.g. "1"
 
     else:
         return Expression(sig, parts)
@@ -180,6 +201,9 @@ def lines_to_expressions(lines):
         elif line_number == 0 and line.level > 0:
             raise Exception('Unexpected indent level in first line')
 
+        # TODO some expressions shouldn't be allowed to have blocks
+        #      e.g. numbers? function calls? maybe IDs?
+        #      throw error for this? or just ignore it? warning?
         elif line.level == stack.level + 1:
             stack.save()
             expr = tokens_to_expression(line.tokens)

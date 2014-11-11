@@ -1,4 +1,4 @@
-define 'x' plus 'y'
-    'x' is an 'integer'
-    'y' is an 'integer'
+define: 'x' plus 'y'
     return 'x' + 'y'
+
+print (4 plus 1)

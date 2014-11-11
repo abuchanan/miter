@@ -28,7 +28,6 @@ if __name__ == '__main__':
     std_mod = llvm.core.Module.from_bitcode(open(std_so_path).read())
     module.link_in(std_mod)
 
-    #llvm.core.load_library_permanently(std_so_path)
     engine = llvm.ee.ExecutionEngine.new(module)
     main_func = module.get_function_named('main')
     engine.run_function(main_func, [])
