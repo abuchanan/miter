@@ -1,23 +1,31 @@
 import argparse
-import ast
+import os
 
-from miter_compiler import compiler
+import llvm.core
+import llvm.ee
+
+from miter_compiler import compiler, parser
 from miter_compiler.lexer import Lexer
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('source_file', type=argparse.FileType('r'))
+_this_dir = os.path.dirname(__file__)
+std_so_path = os.path.join(_this_dir, 'std.so')
+
+cli_parser = argparse.ArgumentParser()
+cli_parser.add_argument('source_file', type=argparse.FileType('r'))
 
 
 if __name__ == '__main__':
-    args = parser.parse_args()
+    args = cli_parser.parse_args()
     source_code = args.source_file.read()
 
     tokens = Lexer().lex(source_code)
-    tree = compiler.tokens_to_ast(tokens)
+    ast = parser.tokens_to_ast(tokens)
+    module = compiler.AST_to_IR(ast)
 
-    ast.fix_missing_locations(tree)
+    print module
 
-    print ast.dump(tree)
-
-    print eval(compile(tree, '<string>', 'exec'))
+    llvm.core.load_library_permanently(std_so_path)
+    engine = llvm.ee.ExecutionEngine.new(module)
+    main_func = module.get_function_named('main')
+    engine.run_function(main_func, [])

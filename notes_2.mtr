@@ -233,8 +233,8 @@ define: play 'clip'
 define: setup body config
   log "load point" and loadpoint
 
-  'x position of body config': 'x position of the player config of the loadpoint'
-  'y position of body config' = 'y position of the player config of the loadpoint'
+  'x position of body config': 'x position of player config of loadpoint'
+  'y position of body config' = 'y position of player config of loadpoint'
 
   let 'width of body config' be 32
   let 'height of body config' be 32
