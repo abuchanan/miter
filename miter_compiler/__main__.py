@@ -9,7 +9,7 @@ from miter_compiler.lexer import Lexer
 
 
 _this_dir = os.path.dirname(__file__)
-std_so_path = os.path.join(_this_dir, 'std.so')
+std_so_path = os.path.join(_this_dir, 'std.bc')
 
 cli_parser = argparse.ArgumentParser()
 cli_parser.add_argument('source_file', type=argparse.FileType('r'))
@@ -25,7 +25,10 @@ if __name__ == '__main__':
 
     print module
 
-    llvm.core.load_library_permanently(std_so_path)
+    std_mod = llvm.core.Module.from_bitcode(open(std_so_path).read())
+    module.link_in(std_mod)
+
+    #llvm.core.load_library_permanently(std_so_path)
     engine = llvm.ee.ExecutionEngine.new(module)
     main_func = module.get_function_named('main')
     engine.run_function(main_func, [])

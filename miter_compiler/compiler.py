@@ -29,6 +29,10 @@ class ASTNodeVisitor(object):
 
     def transform_Expression(self, node):
         # TODO use extern and builtins to get rid of this
+        #
+        # OR maybe just declare every expression that is called, and leave
+        #    it to the linker or runtime to decide whether the declaration/call
+        #    is worth throwing an error?
         sig = node.signature
         if sig == 'print _':
             sig = 'miter_print'
