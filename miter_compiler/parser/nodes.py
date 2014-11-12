@@ -3,6 +3,19 @@ Contains AST node type classes.
 """
 
 
+def signature(nodes):
+    # TODO take types into account
+    sig = []
+
+    for node in nodes:
+        if isinstance(node, Word):
+            sig.append(node.value)
+        else:
+            sig.append('_')
+
+    return ' '.join(sig)
+
+
 class Module(object):
 
     def __init__(self, name, expressions):
@@ -25,7 +38,7 @@ class SimpleNode(object):
             self.block = []
 
     def __repr__(self):
-        return '{}({})'.format(self.node_type, self.value)
+        return '{}({})'.format(self.__class__.__name__, self.value)
 
     def __eq__(self, other):
         return self.value == other.value
@@ -41,8 +54,8 @@ class Return(SimpleNode): pass
 # TODO find a good naming scheme with statement, expression, and possibly phrase
 class Expression(object):
 
-    def __init__(self, signature, parts, block=None):
-        self.signature = signature
+    def __init__(self, parts, block=None):
+        self.signature = signature(parts)
         self.parts = parts
         self.args = [p for p in parts if not isinstance(p, Word)]
 

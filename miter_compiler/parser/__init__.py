@@ -24,19 +24,6 @@ class Line(object):
         return 'Line({}, {})'.format(self.level, self.tokens)
 
 
-def signature(nodes):
-    # TODO take types into account
-    sig = []
-
-    for node in nodes:
-        if isinstance(node, Word):
-            sig.append(node.value)
-        else:
-            sig.append('_')
-
-    return ' '.join(sig)
-
-
 def tokens_to_lines(tokens, indent_amount=4):
     line = Line()
 
@@ -93,11 +80,11 @@ def parts_to_expression(parts):
     sig = signature(parts)
 
     if sig == '_ + _':
-        return AdditionExpression(sig, parts)
+        return AdditionExpression(parts)
 
     elif sig == 'let _ be _':
         # TODO verify args. first arg must be ID
-        return AssignmentExpression(sig, parts)
+        return AssignmentExpression(parts)
 
     elif parts[0].value == 'define:':
         # TODO define statements can't contain nested expressions, only IDs
@@ -110,7 +97,7 @@ def parts_to_expression(parts):
     # TODO handle expression that is a value, e.g. "1"
 
     else:
-        return Expression(sig, parts)
+        return Expression(parts)
 
 
 def lines_to_expressions(lines):

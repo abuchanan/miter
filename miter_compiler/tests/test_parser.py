@@ -2,6 +2,7 @@ import unittest
 import types
 
 from miter_compiler import parser
+from miter_compiler.parser.nodes import *
 from miter_compiler.lexer import Token
 
 
@@ -52,4 +53,47 @@ class tokens_to_lines_Tests(unittest.TestCase):
 
         self.assertEqual(lines[2].tokens, [
             Token('word', 'baz'),
+        ])
+
+
+class lines_to_expressions_Tests(unittest.TestCase):
+
+    def test_basic_expression_nesting(self):
+        self.maxDiff = None
+        Line = parser.Line
+
+        lines = [
+            Line(0, [Token('word', 'foo')]),
+
+            Line(0, [Token('word', 'if')]),
+            Line(1, [Token('word', 'if-block')]),
+            Line(1, [Token('word', 'sub-if')]),
+            Line(2, [Token('word', 'sub-if-block')]),
+            Line(2, [Token('word', 'sub-if-block-2')]),
+
+            Line(0, [Token('word', 'else')]),
+            Line(1, [Token('word', 'sub-else')]),
+            Line(2, [Token('word', 'sub-else-block')]),
+            Line(1, [Token('word', 'other-else')]),
+        ]
+
+        expressions = parser.lines_to_expressions(lines)
+
+        self.assertEqual(expressions, [
+            Expression([Word('foo')]),
+
+            Expression([Word('if')], [
+                Expression([Word('if-block')]),
+                Expression([Word('sub-if')], [
+                    Expression([Word('sub-if-block')]),
+                    Expression([Word('sub-if-block-2')]),
+                ]),
+            ]),
+
+            Expression([Word('else')], [
+                Expression([Word('sub-else')], [
+                    Expression([Word('sub-else-block')]),
+                ]),
+                Expression([Word('other-else')]),
+            ]),
         ])
