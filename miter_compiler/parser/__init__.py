@@ -79,7 +79,10 @@ def tokens_to_expression(tokens):
 def parts_to_expression(parts):
     sig = signature(parts)
 
-    if sig == '_ + _':
+    if sig == '_':
+        return parts[0]
+
+    elif sig == '_ + _':
         return AdditionExpression(parts)
 
     elif sig == '_ = _':
