@@ -4,63 +4,11 @@ An AST represents the program and its structure: expressions,
 variables, etc. and their relationships to eachother.
 """
 
+from miter_compiler.stack import Stack
+from miter_compiler.parser.nodes import *
+
 
 class UnrecognizedTokenType(Exception): pass
-
-
-class Module(object):
-
-    def __init__(self, name, expressions):
-        self.name = name
-        self.expressions = expressions
-
-
-class SimpleNode(object):
-
-    def __init__(self, value, block=None):
-        self.value = value
-
-        if block is not None:
-            self.block = block
-        else:
-            self.block = []
-
-    def __repr__(self):
-        return '{}({})'.format(self.node_type, self.value)
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-
-class Word(SimpleNode): pass
-class ID(SimpleNode): pass
-class Number(SimpleNode): pass
-class Define(SimpleNode): pass
-class Return(SimpleNode): pass
-
-
-# TODO find a good naming scheme with statement, expression, and possibly phrase
-class Expression(object):
-
-    def __init__(self, signature, parts, block=None):
-        self.signature = signature
-        self.parts = parts
-        self.args = [p for p in parts if not isinstance(p, Word)]
-
-        if block is not None:
-            self.block = block
-        else:
-            self.block = []
-
-    def __repr__(self):
-        return 'Expression({}, {})'.format(self.signature, self.block)
-
-    def __eq__(self, other):
-        return self.parts == other.parts and self.block == other.block
-
-
-class AssignmentExpression(Expression): pass
-class AdditionExpression(Expression): pass
 
 
 class Line(object):
@@ -76,29 +24,17 @@ class Line(object):
         return 'Line({}, {})'.format(self.level, self.tokens)
 
 
-class Stack(object):
+def signature(nodes):
+    # TODO take types into account
+    sig = []
 
-    def __init__(self, factory=list):
-        self._factory = factory
-        self._data = []
-        self.save()
+    for node in nodes:
+        if isinstance(node, Word):
+            sig.append(node.value)
+        else:
+            sig.append('_')
 
-    @property
-    def level(self):
-        return len(self._data) - 1
-
-    @property
-    def top(self):
-        return self._data[-1]
-
-    def save(self):
-        self._data.append(self._factory())
-
-    def restore(self):
-        if self.level == 0:
-            raise Exception("Already at level 0")
-
-        return self._data.pop()
+    return ' '.join(sig)
 
 
 def tokens_to_lines(tokens, indent_amount=4):
@@ -119,19 +55,6 @@ def tokens_to_lines(tokens, indent_amount=4):
 
     if line.tokens:
         yield line
-
-
-def signature(nodes):
-    # TODO take types into account
-    sig = []
-
-    for node in nodes:
-        if isinstance(node, Word):
-            sig.append(node.value)
-        else:
-            sig.append('_')
-
-    return ' '.join(sig)
 
 
 def tokens_to_expression(tokens):
