@@ -22,7 +22,7 @@ class ASTNodeVisitor(object):
         bb = current_function.get_entry_basic_block()
         builder = llvm.Builder.new(bb)
         builder.position_at_beginning(bb)
-        return builder.alloca(llvm.Type.int(16), name=var_name)
+        return builder.alloca(llvm.Type.int(32), name=var_name)
 
     def transform_ID(self, node):
         # TODO need some refactoring of ID load/store
@@ -32,7 +32,7 @@ class ASTNodeVisitor(object):
         return self.builder.load(var, node.value)
 
     def transform_Number(self, node):
-        return llvm.Constant.int(llvm.Type.int(16), node.value)
+        return llvm.Constant.int(llvm.Type.int(32), node.value)
 
     def transform_AdditionExpression(self, node):
         args = [self.visit(arg) for arg in node.args]
@@ -41,8 +41,8 @@ class ASTNodeVisitor(object):
     def transform_Define(self, node):
         expr = node.value
         # TODO determine return type
-        func_type = llvm.Type.function(llvm.Type.int(16),
-                                       [llvm.Type.int(16)] * len(expr.args),
+        func_type = llvm.Type.function(llvm.Type.int(32),
+                                       [llvm.Type.int(32)] * len(expr.args),
                                        False)
 
         func = llvm.Function.new(self.module, func_type, expr.signature)
@@ -53,10 +53,9 @@ class ASTNodeVisitor(object):
         self.builder = llvm.Builder.new(bb)
 
         for func_arg, expr_arg in zip(func.args, expr.args):
-            func_arg.name = expr_arg.value
-            alloca = self.alloca(func_arg.name)
+            alloca = self.alloca(expr_arg.value)
             self.builder.store(func_arg, alloca)
-            self.named_values[func_arg.name] = alloca
+            self.named_values[expr_arg.value] = alloca
 
         for expression in node.block:
             self.visit(expression)
@@ -98,6 +97,7 @@ class ASTNodeVisitor(object):
 
         callee = self.module.get_function_named(sig)
         args = [self.visit(arg) for arg in node.args]
+
         return self.builder.call(callee, args)
 
     def transform_Module(self, node):
@@ -106,7 +106,7 @@ class ASTNodeVisitor(object):
         main_func_type = llvm.Type.function(llvm.Type.void(), [])
         main_func = self.module.add_function(main_func_type, 'main')
 
-        print_type = llvm.Type.function(llvm.Type.void(), [llvm.Type.int(16)])
+        print_type = llvm.Type.function(llvm.Type.void(), [llvm.Type.int(32)])
         self.module.add_function(print_type, 'miter_print')
 
         bb = main_func.append_basic_block('entry')

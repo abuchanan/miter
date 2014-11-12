@@ -5,9 +5,6 @@ from miter_compiler import lexer
 from miter_compiler.lexer import Token
 
 
-logging.basicConfig(level=logging.DEBUG)
-
-
 def lex(s):
     return list(lexer.source_to_tokens(s))
 

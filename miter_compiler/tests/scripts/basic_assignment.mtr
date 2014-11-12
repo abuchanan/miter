@@ -1,0 +1,6 @@
+'x' = 8
+print 'x'
+
+
+expected output:
+8
