@@ -82,7 +82,7 @@ def parts_to_expression(parts):
     if sig == '_ + _':
         return AdditionExpression(parts)
 
-    elif sig == 'let _ be _':
+    elif sig == '_ = _':
         # TODO verify args. first arg must be ID
         return AssignmentExpression(parts)
 

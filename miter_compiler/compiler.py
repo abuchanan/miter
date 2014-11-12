@@ -3,6 +3,9 @@ import llvm.core as llvm
 
 class ASTNodeVisitor(object):
 
+    def __init__(self):
+        self.named_values = {}
+
     def visit(self, node):
         node_type_name = node.__class__.__name__
         method_name = 'transform_' + node_type_name
@@ -14,8 +17,19 @@ class ASTNodeVisitor(object):
             return method(node)
 
 
+    def alloca(self, var_name):
+        current_function = self.builder.basic_block.function
+        bb = current_function.get_entry_basic_block()
+        builder = llvm.Builder.new(bb)
+        builder.position_at_beginning(bb)
+        return builder.alloca(llvm.Type.int(16), name=var_name)
+
     def transform_ID(self, node):
-        return self.named_values[node.value]
+        # TODO need some refactoring of ID load/store
+        # if node.context == 'store':
+        # if node.context == 'load':
+        var = self.named_values[node.value]
+        return self.builder.load(var, node.value)
 
     def transform_Number(self, node):
         return llvm.Constant.int(llvm.Type.int(16), node.value)
@@ -33,15 +47,16 @@ class ASTNodeVisitor(object):
 
         func = llvm.Function.new(self.module, func_type, expr.signature)
 
-        self.named_values = {}
-
-        for func_arg, expr_arg in zip(func.args, expr.args):
-            func_arg.name = expr_arg.value
-            self.named_values[func_arg.name] = func_arg
-
+        # TODO I forget, why do we need a new builder?
         old_builder = self.builder
         bb = func.append_basic_block('entry')
         self.builder = llvm.Builder.new(bb)
+
+        for func_arg, expr_arg in zip(func.args, expr.args):
+            func_arg.name = expr_arg.value
+            alloca = self.alloca(func_arg.name)
+            self.builder.store(func_arg, alloca)
+            self.named_values[func_arg.name] = alloca
 
         for expression in node.block:
             self.visit(expression)
@@ -55,7 +70,21 @@ class ASTNodeVisitor(object):
         self.builder.ret(val)
 
     def transform_AssignmentExpression(self, node):
-        pass
+        ID_arg = node.args[0]
+        value_arg = node.args[1]
+
+        value = self.visit(value_arg)
+
+        try:
+            # TODO give the ID node better attribute name, s/value/name/
+            var = self.named_values[ID_arg.value]
+        except KeyError:
+            var = self.alloca(ID_arg.value)
+            self.named_values[ID_arg.value] = var
+
+        self.builder.store(value, var)
+
+        return value
 
     def transform_Expression(self, node):
         # TODO use extern and builtins to get rid of this

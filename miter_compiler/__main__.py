@@ -4,8 +4,7 @@ import os
 import llvm.core
 import llvm.ee
 
-from miter_compiler import compiler, parser
-from miter_compiler.lexer import Lexer
+from miter_compiler import compiler, lexer, parser
 
 
 _this_dir = os.path.dirname(__file__)
@@ -19,7 +18,7 @@ if __name__ == '__main__':
     args = cli_parser.parse_args()
     source_code = args.source_file.read()
 
-    tokens = Lexer().lex(source_code)
+    tokens = lexer.source_to_tokens(source_code)
     ast = parser.tokens_to_ast(tokens)
     module = compiler.AST_to_IR(ast)
 
