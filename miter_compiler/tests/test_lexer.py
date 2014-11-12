@@ -117,7 +117,7 @@ class LexerTests(unittest.TestCase):
         self.assertTokens('x\n  y', [
             Token('word', 'x'),
             Token('newline', ''),
-            Token('indent', '  '),
+            Token('indent', 2),
             Token('word', 'y'),
         ])
 
