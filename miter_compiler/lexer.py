@@ -196,43 +196,42 @@ class StateMachine(object):
             raise InvalidID_Incomplete()
 
 
-class Lexer(object):
 
-    def lex(self, chars):
-        state = StateMachine()
-        grouped = itertools.groupby(chars, state.get_type)
+def source_to_tokens(chars):
+    state = StateMachine()
+    grouped = itertools.groupby(chars, state.get_type)
 
-        # TODO maybe try to get rid of ''.join() as a perf. enhancement
+    # TODO maybe try to get rid of ''.join() as a perf. enhancement
 
-        for group_type, group in grouped:
-            if group_type == 'ignore':
-                pass
+    for group_type, group in grouped:
+        if group_type == 'ignore':
+            pass
 
-            elif group_type == 'word':
-                yield Token('word', ''.join(group))
+        elif group_type == 'word':
+            yield Token('word', ''.join(group))
 
-            elif group_type == 'ID':
-                yield Token('ID', ''.join(group).strip())
+        elif group_type == 'ID':
+            yield Token('ID', ''.join(group).strip())
 
-            elif group_type == 'newline':
-                yield Token('newline', '')
+        elif group_type == 'newline':
+            yield Token('newline', '')
 
-            elif group_type == 'indent':
-                yield Token('indent', len(list(group)))
+        elif group_type == 'indent':
+            yield Token('indent', len(list(group)))
 
-            elif group_type == 'number':
-                # TODO handle more than int()
-                yield Token('number', int(''.join(group)))
+        elif group_type == 'number':
+            # TODO handle more than int()
+            yield Token('number', int(''.join(group)))
 
-            elif group_type == 'expression start':
-                for _ in group:
-                    yield Token('expression start')
+        elif group_type == 'expression start':
+            for _ in group:
+                yield Token('expression start')
 
-            elif group_type == 'expression end':
-                for _ in group:
-                    yield Token('expression end')
+        elif group_type == 'expression end':
+            for _ in group:
+                yield Token('expression end')
 
-            else:
-                raise UnrecognizedInput()
+        else:
+            raise UnrecognizedInput()
 
-        state.finalize()
+    state.finalize()
